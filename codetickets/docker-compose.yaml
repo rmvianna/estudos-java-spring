@@ -18,6 +18,7 @@ services:
 
     volumes:
       - ./target/:/apps/batch/codetickets
+      - ./files/:/apps/files
 
     env_file:
       - path: ./app.env
