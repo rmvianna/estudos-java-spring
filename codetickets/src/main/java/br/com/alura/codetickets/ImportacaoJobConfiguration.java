@@ -7,6 +7,7 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
@@ -39,11 +40,14 @@ public class ImportacaoJobConfiguration {
     }
 
     @Bean
-    public Step passoInicial(ItemReader<Importacao> reader, ItemWriter<Importacao> writer,
+    public Step passoInicial(ItemReader<Importacao> reader,
+                             ItemProcessor<Importacao, Importacao> processor,
+                             ItemWriter<Importacao> writer,
                              JobRepository jobRepository) {
         return new StepBuilder("passo-inicial", jobRepository)
                 .<Importacao, Importacao>chunk(2, transactionManager)
                 .reader(reader)
+                .processor(processor)
                 .writer(writer)
                 .build();
     }
@@ -65,10 +69,29 @@ public class ImportacaoJobConfiguration {
     public ItemWriter<Importacao> writer(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<Importacao>()
                 .dataSource(dataSource)
-                .sql("INSERT INTO importacao (cpf_cliente, nome_cliente, data_nascimento_cliente, nome_evento, tipo_ingresso, valor_evento, data_evento, data_hora_importacao) " +
-                        "VALUES (:cpfCliente, :nomeCliente, :dataNascimentoCliente, :nomeEvento, :tipoIngresso, :valorEvento, :dataEvento, :dataHoraImportacao)")
+                .sql("INSERT INTO importacao (cpf_cliente, nome_cliente, data_nascimento_cliente, nome_evento, tipo_ingresso, valor_evento, data_evento, data_hora_importacao, taxa_adm) " +
+                        "VALUES (:cpfCliente, :nomeCliente, :dataNascimentoCliente, :nomeEvento, :tipoIngresso, :valorEvento, :dataEvento, :dataHoraImportacao, :taxaAdm)")
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .build();
+    }
+
+    @Bean
+    public ItemProcessor<Importacao, Importacao> processor() {
+        return new ItemProcessor<Importacao, Importacao>() {
+
+            @Override
+            public Importacao process(Importacao item) {
+                if (item.getTipoIngresso().equalsIgnoreCase("vip")) {
+                    item.setTaxaAdm(130.0);
+                } else if (item.getTipoIngresso().equalsIgnoreCase("camarote")) {
+                    item.setTaxaAdm(80.0);
+                } else {
+                    item.setTaxaAdm(50.0);
+                }
+
+                return item;
+            }
+        };
     }
 
 }

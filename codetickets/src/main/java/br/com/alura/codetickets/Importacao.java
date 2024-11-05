@@ -20,6 +20,7 @@ public class Importacao {
     private Double valorEvento;
     private LocalDate dataEvento;
     private LocalDateTime dataHoraImportacao;
+    private Double taxaAdm;
 
     public Long getId() {
         return id;
@@ -91,5 +92,13 @@ public class Importacao {
 
     public void setDataHoraImportacao(LocalDateTime dataHoraImportacao) {
         this.dataHoraImportacao = dataHoraImportacao;
+    }
+
+    public Double getTaxaAdm() {
+        return taxaAdm;
+    }
+
+    public void setTaxaAdm(Double taxaAdm) {
+        this.taxaAdm = taxaAdm;
     }
 }
