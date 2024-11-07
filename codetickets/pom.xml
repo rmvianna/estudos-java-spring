@@ -52,7 +52,9 @@
 		</dependency>
 	</dependencies>
 
+	<packaging>jar</packaging>
 	<build>
+		<finalName>codetickets</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
