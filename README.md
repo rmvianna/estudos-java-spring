@@ -1,7 +1,7 @@
-# Estudos SpringBatch
-Este repositório tem por objetivo armazenar os estudos do framework SpringBatch, utilizado para processamentos em lote na plataforma Java.
+# Estudos JavaSpring
+Este repositório tem por objetivo armazenar os estudos do framework Spring, utilizado para processamentos em lote na plataforma Java.
 
-Para executar algum projeto, primeiro é necessário acessar a pasta do mesmo e rodar o comando abaixo, que será o responsável por subir os containers necessários. Depois ver como rodar cada aplicativo conforme seção específica
+Para executar algum projeto, acesse a subpasta referente ao assunto do Spring (como SpringBatch) e na sequência escolha o projeto desejado. Depois, rodar o comando abaixo, que será o responsável por subir os containers necessários. Depois ver como rodar cada aplicativo conforme seção específica
 
 ```powershell
 docker-compose up -d
