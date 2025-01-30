@@ -1,12 +1,6 @@
 package br.com.alura.adopetstore.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
@@ -17,6 +11,8 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer quantidade;
+    @Version
+    private Integer versao;
     @OneToOne
     private Produto produto;
 
@@ -38,6 +34,11 @@ public class Estoque {
     public Produto getProduto() {
         return produto;
     }
+
+    public Integer getVersao() {
+        return versao;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
