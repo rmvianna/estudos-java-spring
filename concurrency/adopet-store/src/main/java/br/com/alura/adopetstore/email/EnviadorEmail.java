@@ -21,8 +21,7 @@ public class EnviadorEmail {
 //            email.setTo(destinatario);
 //            email.setText(textoEmail);
 //            emailSender.send(email);
-            System.out.println("Enviando email!");
-            System.out.println(textoEmail);
+            System.out.printf("Enviando email abaixo de assunto '%s' para %s%n%s%n%n!", assunto, destinatario, textoEmail);
 
             //Simulando demora de 3 segundos para enviar email
             Thread.sleep(3000);
