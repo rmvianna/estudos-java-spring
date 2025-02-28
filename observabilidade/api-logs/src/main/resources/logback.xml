@@ -1,0 +1,44 @@
+<configuration>
+
+    <property name="LOG_PATH" value="logs/api-cursos.log"/>
+
+    <!-- appender para gerar em um unico arquivo -->
+<!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
+<!--        <file>${LOG_PATH}</file>-->
+<!--        <append>true</append>-->
+<!--        <encoder>-->
+<!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+    <!-- appender para gerar log em arquivo de forma rotacionada -->
+<!--    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <file>${LOG_PATH}</file>-->
+<!--        <append>true</append>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+<!--            <fileNamePattern>${LOG_PATH}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>-->
+<!--            <maxFileSize>100KB</maxFileSize>-->
+<!--            <totalSizeCap>200KB</totalSizeCap> &lt;!&ndash; quando a soma do tamanho dos arqs gz ultrapassar este valor, eles serao excluidos &ndash;&gt;-->
+<!--            <maxHistory>5</maxHistory> &lt;!&ndash; quantidade de dias que os arquivos compactados ficarao em disco &ndash;&gt;-->
+<!--        </rollingPolicy>-->
+<!--        <encoder>-->
+<!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0}.%M - %msg %rEx{short}%n</pattern>
+        </encoder>
+    </appender>
+
+<!--    <logger name="br.com.alura" level="info" additivity="false">-->
+<!--        <appender-ref ref="FILE" />-->
+<!--    </logger>-->
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+<!--        <appender-ref ref="FILE" />-->
+    </root>
+    
+</configuration>
