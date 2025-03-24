@@ -1,11 +1,13 @@
 networks:
   database:
+    internal:
+      true
   monit:
   api:
 
 services:
 
-  database:
+  database-api-cursos:
     image: postgres
     container_name: database-api-cursos
     restart: unless-stopped
@@ -20,17 +22,38 @@ services:
       - APP_DB_USER=alura
       - APP_DB_PASS=nJ6vsW37rCd1v88
       - APP_DB_NAME=logsdb
-    ports:
-      - '5432:5432'
+    expose:
+      - 5432
     volumes:
       - ./postgres/db:/docker-entrypoint-initdb.d/
       - ./postgres/data:/var/lib/postgresql/data
     networks:
       - database
+  
+  api-cursos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: api-cursos
+    container_name: api-cursos
+    restart: unless-stopped
+    ports:
+      - 80:8080
+    networks:
+      - api
+      - database
+      - monit
+    healthcheck:
+      test: "curl -sS http://api-cursos:8080/actuator/health"
+      interval: 1s
+      timeout: 30s
+      retries: 60
+    depends_on:
+      - database-api-cursos
 
   prometheus-api-cursos:
     image: prom/prometheus:latest
-    user: 'root:root'
+    user: "root:root"
     container_name: prometheus-api-cursos
     restart: unless-stopped
     volumes:
@@ -43,39 +66,49 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
     ports:
-      - '9090:9090'
+      - 9090:9090
     networks:
       - monit
+      - api
+    depends_on:
+      - api-cursos
 
   grafana-api-cursos:
     image: grafana/grafana
-    user: 'root:root'
+    user: "root:root"
     container_name: grafana-api-cursos
     volumes:
       - ./grafana:/var/lib/grafana
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - 3000:3000
     networks:
       - monit
+    depends_on:
+      - prometheus-api-cursos
 
   loki-api-cursos:
     image: grafana/loki
     container_name: loki-api-cursos
     command:
-      - '-config.file=/etc/loki/local-config.yaml'
-      - '-print-config-stderr=true'
-    ports:
-      - '3100:3100'
+      - -config.file=/etc/loki/local-config.yaml
+      - -print-config-stderr=true
+    expose:
+      - 3100
     networks:
       - monit
+      - api
+    depends_on:
+      - grafana-api-cursos
 
   client-api-cursos:
     build:
-      context: ./client
+      context: ./client/
       dockerfile: Dockerfile
     image: client-api-cursos
     container_name: client-api-cursos
     restart: unless-stopped
     networks:
       - api
+    depends_on:
+      - api-cursos
