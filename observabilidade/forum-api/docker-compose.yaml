@@ -38,10 +38,6 @@ services:
       - database
     depends_on:
       - redis-forum-api
-    ulimits:
-      nofile:
-        soft: 1048576
-        hard: 1048576
 
   app-forum-api:
     build:
@@ -61,10 +57,6 @@ services:
       interval: 1s
       timeout: 30s
       retries: 60
-    ulimits:
-      nofile:
-        soft: 1048576
-        hard: 1048576
   
   proxy-forum-api:
     image: nginx
@@ -87,6 +79,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules:/etc/prometheus/alert.rules
       - ./prometheus/prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -102,6 +95,22 @@ services:
     depends_on:
       - proxy-forum-api
     user: root
+  
+  alertmanager-forum-api: 
+    image: prom/alertmanager
+    container_name: alertmanager-forum-api
+    volumes: 
+      - ./alertmanager:/etc/alertmanager/:ro
+    ports: 
+      - 9093:9093
+    command: 
+      - --config.file=/etc/alertmanager/alertmanager.yml
+    networks:
+      - monit
+    depends_on:
+      - prometheus-forum-api
+    user: root
+
 
   grafana-forum-api:
     image: grafana/grafana
@@ -114,8 +123,9 @@ services:
     networks:
       - monit
     depends_on:
-      - prometheus-forum-api
+      - alertmanager-forum-api
     user: root
+
 
   client-forum-api:
     build:
